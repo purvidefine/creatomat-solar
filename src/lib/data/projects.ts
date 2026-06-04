@@ -545,3 +545,86 @@ export function getProjectsByCategory(category: ProjectData["category"]): Projec
 export function getRelatedProjects(currentSlug: string, serviceSlug: string, limit = 3): ProjectData[] {
   return PROJECTS_DATA.filter((p) => p.serviceSlug === serviceSlug && p.slug !== currentSlug).slice(0, limit);
 }
+
+// ─── Sanity-backed async functions (fall back to static data) ───────────────
+
+import { client, isSanityConfigured } from "@/sanity/lib/client";
+import {
+  ALL_PROJECTS_QUERY,
+  ALL_PROJECT_SLUGS_QUERY,
+  PROJECT_BY_SLUG_QUERY,
+  FEATURED_PROJECTS_QUERY,
+} from "@/sanity/lib/queries";
+
+function normalizeProject(raw: Record<string, unknown>): ProjectData {
+  const specs: Record<string, string> = {};
+  if (Array.isArray(raw.specifications)) {
+    for (const item of raw.specifications as { key: string; value: string }[]) {
+      if (item.key) specs[item.key] = item.value ?? "";
+    }
+  }
+  return { ...raw, specifications: specs, gallery: (raw.gallery as string[]) ?? [] } as ProjectData;
+}
+
+export async function fetchAllProjects(): Promise<ProjectData[]> {
+  if (!isSanityConfigured) return PROJECTS_DATA;
+  try {
+    const data = await client.fetch<Record<string, unknown>[]>(ALL_PROJECTS_QUERY, {}, { next: { tags: ["project"] } });
+    if (!data?.length) return PROJECTS_DATA;
+    return data.map(normalizeProject);
+  } catch {
+    return PROJECTS_DATA;
+  }
+}
+
+export async function fetchAllProjectSlugs(): Promise<string[]> {
+  if (!isSanityConfigured) return getAllProjectSlugs();
+  try {
+    const slugs = await client.fetch<string[]>(ALL_PROJECT_SLUGS_QUERY, {}, { next: { tags: ["project"] } });
+    return [...new Set([...getAllProjectSlugs(), ...(slugs ?? [])])];
+  } catch {
+    return getAllProjectSlugs();
+  }
+}
+
+export async function fetchProjectBySlug(slug: string): Promise<ProjectData | undefined> {
+  if (!isSanityConfigured) return getProjectBySlug(slug);
+  try {
+    const data = await client.fetch<Record<string, unknown> | null>(PROJECT_BY_SLUG_QUERY, { slug }, { next: { tags: [`project:${slug}`] } });
+    if (!data) return getProjectBySlug(slug);
+    return normalizeProject(data);
+  } catch {
+    return getProjectBySlug(slug);
+  }
+}
+
+export async function fetchProjectsByServiceSlug(serviceSlug: string): Promise<ProjectData[]> {
+  const all = await fetchAllProjects();
+  return all.filter((p) => p.serviceSlug === serviceSlug);
+}
+
+export async function fetchRelatedProjects(currentSlug: string, serviceSlug: string, limit = 3): Promise<ProjectData[]> {
+  const all = await fetchAllProjects();
+  return all.filter((p) => p.serviceSlug === serviceSlug && p.slug !== currentSlug).slice(0, limit);
+}
+
+export async function fetchFeaturedProjects(): Promise<ProjectData[]> {
+  if (!isSanityConfigured) {
+    return PROJECTS_DATA.filter((p) =>
+      ["250kw-rooftop-bhilwara", "textile-automation-bhilwara", "smart-villa-udaipur", "bobbin-winding-spm"].includes(p.slug)
+    );
+  }
+  try {
+    const data = await client.fetch<Record<string, unknown>[]>(FEATURED_PROJECTS_QUERY, {}, { next: { tags: ["project"] } });
+    if (!data?.length) {
+      return PROJECTS_DATA.filter((p) =>
+        ["250kw-rooftop-bhilwara", "textile-automation-bhilwara", "smart-villa-udaipur", "bobbin-winding-spm"].includes(p.slug)
+      );
+    }
+    return data.map(normalizeProject);
+  } catch {
+    return PROJECTS_DATA.filter((p) =>
+      ["250kw-rooftop-bhilwara", "textile-automation-bhilwara", "smart-villa-udaipur", "bobbin-winding-spm"].includes(p.slug)
+    );
+  }
+}

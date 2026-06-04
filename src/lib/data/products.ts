@@ -427,3 +427,64 @@ export function getRelatedProducts(slugs: string[]): ProductData[] {
 export function getProductCategories(): string[] {
   return [...new Set(PRODUCTS_DATA.map((p) => p.category))];
 }
+
+// ─── Sanity-backed async functions (fall back to static data) ───────────────
+
+import { client, isSanityConfigured } from "@/sanity/lib/client";
+import {
+  ALL_PRODUCTS_QUERY,
+  ALL_PRODUCT_SLUGS_QUERY,
+  PRODUCT_BY_SLUG_QUERY,
+} from "@/sanity/lib/queries";
+
+function normalizeProduct(raw: Record<string, unknown>): ProductData {
+  const specs: Record<string, string> = {};
+  if (Array.isArray(raw.specifications)) {
+    for (const item of raw.specifications as { key: string; value: string }[]) {
+      if (item.key) specs[item.key] = item.value ?? "";
+    }
+  }
+  return { ...raw, specifications: specs } as ProductData;
+}
+
+export async function fetchRelatedProducts(slugs: string[]): Promise<ProductData[]> {
+  const all = await fetchAllProducts();
+  return all.filter((p) => slugs.includes(p.slug));
+}
+
+export async function fetchProductsByServiceSlug(serviceSlug: string): Promise<ProductData[]> {
+  const all = await fetchAllProducts();
+  return all.filter((p) => p.serviceSlug === serviceSlug);
+}
+
+export async function fetchAllProducts(): Promise<ProductData[]> {
+  if (!isSanityConfigured) return PRODUCTS_DATA;
+  try {
+    const data = await client.fetch<Record<string, unknown>[]>(ALL_PRODUCTS_QUERY, {}, { next: { tags: ["product"] } });
+    if (!data?.length) return PRODUCTS_DATA;
+    return data.map(normalizeProduct);
+  } catch {
+    return PRODUCTS_DATA;
+  }
+}
+
+export async function fetchAllProductSlugs(): Promise<string[]> {
+  if (!isSanityConfigured) return getAllProductSlugs();
+  try {
+    const slugs = await client.fetch<string[]>(ALL_PRODUCT_SLUGS_QUERY, {}, { next: { tags: ["product"] } });
+    return [...new Set([...getAllProductSlugs(), ...(slugs ?? [])])];
+  } catch {
+    return getAllProductSlugs();
+  }
+}
+
+export async function fetchProductBySlug(slug: string): Promise<ProductData | undefined> {
+  if (!isSanityConfigured) return getProductBySlug(slug);
+  try {
+    const data = await client.fetch<Record<string, unknown> | null>(PRODUCT_BY_SLUG_QUERY, { slug }, { next: { tags: [`product:${slug}`] } });
+    if (!data) return getProductBySlug(slug);
+    return normalizeProduct(data);
+  } catch {
+    return getProductBySlug(slug);
+  }
+}

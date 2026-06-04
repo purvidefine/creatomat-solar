@@ -23,7 +23,9 @@ const NAV_LINKS = [
   { label: "Contact", href: "/contact" },
 ];
 
-export default function Navbar() {
+export default function Navbar({ phone }: { phone?: string }) {
+  const displayPhone = phone ?? "+91 98280 67847";
+  const telPhone = phone ? phone.replace(/\s/g, "").replace(/^\+/, "") : "919828067847";
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
@@ -223,7 +225,7 @@ export default function Navbar() {
             {/* Desktop CTA */}
             <div className="hidden md:flex items-center gap-5">
               <a
-                href="tel:+919828067847"
+                href={`tel:${telPhone}`}
                 className={`flex items-center gap-2 text-sm transition-colors ${
                   useDarkText
                     ? "text-gray-500 hover:text-navy"
@@ -231,7 +233,7 @@ export default function Navbar() {
                 }`}
               >
                 <Phone size={15} />
-                <span className="font-mono text-xs">+91 98280 67847</span>
+                <span className="font-mono text-xs">{displayPhone}</span>
               </a>
               <Link
                 href="/contact"

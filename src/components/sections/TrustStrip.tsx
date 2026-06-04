@@ -4,8 +4,9 @@ import { motion } from "framer-motion";
 import { fadeIn } from "@/lib/animations";
 import { CLIENTS } from "@/lib/constants";
 
-export default function TrustStrip() {
-  const doubled = [...CLIENTS, ...CLIENTS];
+export default function TrustStrip({ clients, label }: { clients?: string[]; label?: string }) {
+  const list = clients?.length ? clients : CLIENTS;
+  const doubled = [...list, ...list];
 
   return (
     <motion.section
@@ -17,7 +18,7 @@ export default function TrustStrip() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4">
         <p className="text-center text-xs font-semibold uppercase tracking-[0.15em] text-gray-400">
-          Trusted by leading businesses
+          {label ?? "Trusted by leading businesses"}
         </p>
       </div>
       <div className="relative">

@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
-import { getAllProjectSlugs, getProjectBySlug } from "@/lib/data/projects";
+import { fetchAllProjectSlugs, fetchProjectBySlug, fetchRelatedProjects } from "@/lib/data/projects";
 import ProjectDetailTemplate from "@/components/templates/ProjectDetailTemplate";
 
-export function generateStaticParams() {
-  return getAllProjectSlugs().map((slug) => ({ slug }));
+export async function generateStaticParams() {
+  const slugs = await fetchAllProjectSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -12,7 +13,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const project = await fetchProjectBySlug(slug);
   if (!project) return {};
   return {
     title: `${project.title} | Creatomat Projects`,
@@ -26,7 +27,8 @@ export default async function ProjectPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const project = await fetchProjectBySlug(slug);
   if (!project) notFound();
-  return <ProjectDetailTemplate data={project} />;
+  const related = await fetchRelatedProjects(slug, project.serviceSlug, 3);
+  return <ProjectDetailTemplate data={project} relatedProjects={related} />;
 }

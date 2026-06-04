@@ -22,7 +22,9 @@ const SYSTEM_TYPES = [
   { label: "Industrial", avgBill: 200000, costPerKw: 40000 },
 ];
 
-export default function SolarCalculator() {
+interface CalcHeader { badge?: string; title?: string; description?: string; buttonText?: string }
+
+export default function SolarCalculator({ header }: { header?: CalcHeader } = {}) {
   const [systemType, setSystemType] = useState(1); // Commercial default
   const [monthlyBill, setMonthlyBill] = useState(25000);
   const [roofArea, setRoofArea] = useState(1000); // sq ft
@@ -99,13 +101,13 @@ export default function SolarCalculator() {
         >
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-5">
             <Calculator size={14} className="text-primary" />
-            <span className="text-xs font-medium text-primary tracking-wide">Solar Savings Calculator</span>
+            <span className="text-xs font-medium text-primary tracking-wide">{header?.badge ?? "Solar Savings Calculator"}</span>
           </div>
           <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-4">
-            How Much Can <span className="gradient-text">You Save?</span>
+            {header?.title ?? <>How Much Can <span className="gradient-text">You Save?</span></>}
           </h2>
           <p className="text-gray-400 max-w-xl mx-auto mb-4">
-            Enter your details below and instantly see your potential solar savings, system size, and payback period.
+            {header?.description ?? "Enter your details below and instantly see your potential solar savings, system size, and payback period."}
           </p>
           <Link
             href="/calculator"
@@ -206,7 +208,7 @@ export default function SolarCalculator() {
               className="w-full py-4 rounded-xl font-semibold text-navy-dark bg-gradient-to-r from-primary to-primary-light hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2"
             >
               <Sun size={18} />
-              Calculate My Savings
+              {header?.buttonText ?? "Calculate My Savings"}
             </button>
           </motion.div>
 

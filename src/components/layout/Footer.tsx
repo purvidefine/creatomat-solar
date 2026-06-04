@@ -4,6 +4,12 @@ import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { CONTACT_INFO, SOCIAL_LINKS } from "@/lib/constants";
 import Logo from "@/components/ui/Logo";
 
+interface FooterProps {
+  contact?: { address: string; phone: string; email: string; whatsapp: string };
+  socialLinks?: { label: string; href: string }[];
+  companyName?: string;
+}
+
 const quickLinks = [
   { label: "Home", href: "#" },
   { label: "About Us", href: "#about" },
@@ -22,7 +28,10 @@ const serviceLinks = [
   { label: "Training", href: "#services" },
 ];
 
-export default function Footer() {
+export default function Footer({ contact, socialLinks, companyName }: FooterProps) {
+  const c = contact ?? CONTACT_INFO;
+  const links = socialLinks?.length ? socialLinks : SOCIAL_LINKS;
+  const name = companyName ?? "Creatomat Private Limited";
   return (
     <footer className="bg-navy-dark text-gray-400">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -37,7 +46,7 @@ export default function Footer() {
               Made in India, built for the future.
             </p>
             <div className="flex gap-3">
-              {SOCIAL_LINKS.map((link) => (
+              {links.map((link) => (
                 <a
                   key={link.label}
                   href={link.href}
@@ -96,24 +105,24 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex gap-2 text-sm">
                 <MapPin size={16} className="flex-shrink-0 mt-0.5" />
-                <span>{CONTACT_INFO.address}</span>
+                <span>{c.address}</span>
               </li>
               <li>
                 <a
-                  href={`tel:${CONTACT_INFO.phone}`}
+                  href={`tel:${c.phone}`}
                   className="flex gap-2 text-sm hover:text-white transition-colors"
                 >
                   <Phone size={16} className="flex-shrink-0" />
-                  {CONTACT_INFO.phone}
+                  {c.phone}
                 </a>
               </li>
               <li>
                 <a
-                  href={`mailto:${CONTACT_INFO.email}`}
+                  href={`mailto:${c.email}`}
                   className="flex gap-2 text-sm hover:text-white transition-colors"
                 >
                   <Mail size={16} className="flex-shrink-0" />
-                  {CONTACT_INFO.email}
+                  {c.email}
                 </a>
               </li>
               <li className="flex gap-2 text-sm">
@@ -129,7 +138,7 @@ export default function Footer() {
       <div className="border-t border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-gray-500">
-            &copy; {new Date().getFullYear()} Creatomat Private Limited. All rights reserved.
+            &copy; {new Date().getFullYear()} {name}. All rights reserved.
           </p>
           <div className="flex gap-6 text-xs text-gray-500">
             <a href="#" className="hover:text-gray-400 transition-colors">

@@ -10,8 +10,14 @@ import type { ProjectData } from "@/lib/data/projects";
 import { getRelatedProjects } from "@/lib/data/projects";
 import Link from "next/link";
 
-export default function ProjectDetailTemplate({ data }: { data: ProjectData }) {
-  const related = getRelatedProjects(data.slug, data.serviceSlug, 3);
+export default function ProjectDetailTemplate({
+  data,
+  relatedProjects,
+}: {
+  data: ProjectData;
+  relatedProjects?: ProjectData[];
+}) {
+  const related = relatedProjects ?? getRelatedProjects(data.slug, data.serviceSlug, 3);
 
   return (
     <main>

@@ -3,42 +3,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Phone, Mail, MapPin, Clock, MessageCircle, Send, CheckCircle } from "lucide-react";
-import PageHero from "@/components/ui/PageHero";
-import { CONTACT_INFO } from "@/lib/constants";
 import { fadeUp, slideInLeft, slideInRight, staggerContainer } from "@/lib/animations";
+import type { ContactInfo } from "@/lib/data/siteSettings";
 
-const CONTACT_METHODS = [
-  {
-    icon: Phone,
-    title: "Call Us",
-    detail: CONTACT_INFO.phone,
-    href: `tel:${CONTACT_INFO.phone}`,
-    description: "Mon–Sat, 9 AM – 6 PM",
-  },
-  {
-    icon: Mail,
-    title: "Email Us",
-    detail: CONTACT_INFO.email,
-    href: `mailto:${CONTACT_INFO.email}`,
-    description: "We reply within 24 hours",
-  },
-  {
-    icon: MessageCircle,
-    title: "WhatsApp",
-    detail: "Chat with us",
-    href: `https://wa.me/${CONTACT_INFO.whatsapp}?text=Hi%2C%20I%27m%20interested%20in%20solar%20solutions`,
-    description: "Instant response",
-  },
-  {
-    icon: MapPin,
-    title: "Visit Us",
-    detail: "Bhilwara, Rajasthan",
-    href: `https://maps.google.com/?q=${encodeURIComponent(CONTACT_INFO.address)}`,
-    description: CONTACT_INFO.address,
-  },
-];
-
-export default function ContactPage() {
+export default function ContactClient({ contact }: { contact: ContactInfo }) {
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -47,14 +15,39 @@ export default function ContactPage() {
     setTimeout(() => setSubmitted(false), 4000);
   };
 
-  return (
-    <main>
-      <PageHero
-        overline="Contact Us"
-        title="Let's Build Something Powerful Together"
-        description="Get a free site assessment and custom quote within 24 hours. Our engineers are ready to design your optimal energy solution."
-      />
+  const methods = [
+    {
+      icon: Phone,
+      title: "Call Us",
+      detail: contact.phone,
+      href: `tel:${contact.phone}`,
+      description: "Mon–Sat, 9 AM – 6 PM",
+    },
+    {
+      icon: Mail,
+      title: "Email Us",
+      detail: contact.email,
+      href: `mailto:${contact.email}`,
+      description: "We reply within 24 hours",
+    },
+    {
+      icon: MessageCircle,
+      title: "WhatsApp",
+      detail: "Chat with us",
+      href: `https://wa.me/${contact.whatsapp}?text=Hi%2C%20I%27m%20interested%20in%20solar%20solutions`,
+      description: "Instant response",
+    },
+    {
+      icon: MapPin,
+      title: "Visit Us",
+      detail: "Bhilwara, Rajasthan",
+      href: `https://maps.google.com/?q=${encodeURIComponent(contact.address)}`,
+      description: contact.address,
+    },
+  ];
 
+  return (
+    <>
       {/* Contact Methods */}
       <section className="py-12 bg-white border-b border-gray-100 grid-lines-light">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -65,7 +58,7 @@ export default function ContactPage() {
             viewport={{ once: true }}
             className="grid grid-cols-2 lg:grid-cols-4 gap-4"
           >
-            {CONTACT_METHODS.map((method) => (
+            {methods.map((method) => (
               <motion.a
                 key={method.title}
                 variants={fadeUp}
@@ -86,7 +79,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Form + Map */}
+      {/* Form + Info */}
       <section className="section-padding bg-gray-50 grid-lines-light">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-5 gap-12 lg:gap-16">
@@ -99,19 +92,11 @@ export default function ContactPage() {
               className="lg:col-span-3"
             >
               <div className="bg-white rounded-3xl p-8 lg:p-10 shadow-xl shadow-gray-200/50 border border-gray-100">
-                <h2 className="font-heading text-2xl font-bold text-navy mb-2">
-                  Get Your Free Quote
-                </h2>
-                <p className="text-sm text-gray-500 mb-8">
-                  Fill out the form and our team will get back to you within 24 hours.
-                </p>
+                <h2 className="font-heading text-2xl font-bold text-navy mb-2">Get Your Free Quote</h2>
+                <p className="text-sm text-gray-500 mb-8">Fill out the form and our team will get back to you within 24 hours.</p>
 
                 {submitted ? (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="py-16 text-center"
-                  >
+                  <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="py-16 text-center">
                     <div className="w-16 h-16 mx-auto rounded-full bg-emerald-100 flex items-center justify-center mb-4">
                       <CheckCircle size={32} className="text-emerald-600" />
                     </div>
@@ -123,40 +108,21 @@ export default function ContactPage() {
                     <div className="grid md:grid-cols-2 gap-5">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name *</label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="Your name"
-                          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all text-sm"
-                        />
+                        <input type="text" required placeholder="Your name" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all text-sm" />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone *</label>
-                        <input
-                          type="tel"
-                          required
-                          placeholder="+91 XXXXX XXXXX"
-                          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all text-sm"
-                        />
+                        <input type="tel" required placeholder="+91 XXXXX XXXXX" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all text-sm" />
                       </div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-5">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1.5">Email *</label>
-                        <input
-                          type="email"
-                          required
-                          placeholder="you@company.com"
-                          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all text-sm"
-                        />
+                        <input type="email" required placeholder="you@company.com" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all text-sm" />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1.5">City</label>
-                        <input
-                          type="text"
-                          placeholder="Your city"
-                          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all text-sm"
-                        />
+                        <input type="text" placeholder="Your city" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all text-sm" />
                       </div>
                     </div>
                     <div>
@@ -167,52 +133,36 @@ export default function ContactPage() {
                         <option>Industrial Automation</option>
                         <option>Special Purpose Machines</option>
                         <option>Electrical Panels</option>
-                        <option>Maintenance & AMC</option>
+                        <option>Maintenance &amp; AMC</option>
                         <option>Training</option>
                         <option>Other</option>
                       </select>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">Message</label>
-                      <textarea
-                        rows={4}
-                        placeholder="Tell us about your project requirements..."
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all text-sm resize-none"
-                      />
+                      <textarea rows={4} placeholder="Tell us about your project requirements..." className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all text-sm resize-none" />
                     </div>
-                    <button
-                      type="submit"
-                      className="w-full inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-medium text-white bg-gradient-to-r from-primary to-primary-light rounded-xl hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5 transition-all duration-300"
-                    >
+                    <button type="submit" className="w-full inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-medium text-white bg-gradient-to-r from-primary to-primary-light rounded-xl hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5 transition-all duration-300">
                       <Send size={18} />
                       Submit Enquiry
                     </button>
-                    <p className="text-xs text-gray-400 text-center flex items-center justify-center gap-1">
-                      🔒 Your data is secure and will never be shared.
-                    </p>
+                    <p className="text-xs text-gray-400 text-center flex items-center justify-center gap-1">🔒 Your data is secure and will never be shared.</p>
                   </form>
                 )}
               </div>
             </motion.div>
 
             {/* Info Side */}
-            <motion.div
-              variants={slideInRight}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
-              className="lg:col-span-2 space-y-6"
-            >
-              {/* Office Info */}
+            <motion.div variants={slideInRight} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} className="lg:col-span-2 space-y-6">
               <div className="bg-white rounded-2xl p-7 border border-gray-100">
                 <h3 className="font-heading text-lg font-semibold text-navy mb-4">Office Address</h3>
                 <div className="space-y-4">
                   <div className="flex gap-3">
-                    <MapPin size={18} className="text-primary flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-gray-500 leading-relaxed">{CONTACT_INFO.address}</p>
+                    <MapPin size={18} className="text-primary shrink-0 mt-0.5" />
+                    <p className="text-sm text-gray-500 leading-relaxed">{contact.address}</p>
                   </div>
                   <div className="flex gap-3">
-                    <Clock size={18} className="text-primary flex-shrink-0" />
+                    <Clock size={18} className="text-primary shrink-0" />
                     <div>
                       <p className="text-sm text-gray-600 font-medium">Working Hours</p>
                       <p className="text-sm text-gray-500">Mon – Sat: 9:00 AM – 6:00 PM</p>
@@ -221,35 +171,24 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              {/* Map placeholder */}
               <div className="rounded-2xl overflow-hidden aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border border-gray-200">
                 <div className="text-center">
                   <MapPin size={32} className="text-gray-400 mx-auto mb-2" />
                   <p className="text-sm text-gray-500 font-medium">Bhilwara, Rajasthan</p>
-                  <a
-                    href={`https://maps.google.com/?q=${encodeURIComponent(CONTACT_INFO.address)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-primary hover:underline mt-1 inline-block"
-                  >
+                  <a href={`https://maps.google.com/?q=${encodeURIComponent(contact.address)}`} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline mt-1 inline-block">
                     Open in Google Maps →
                   </a>
                 </div>
               </div>
 
-              {/* Quick contact */}
               <div className="bg-navy rounded-2xl p-7 relative overflow-hidden">
                 <div className="absolute inset-0 dot-grid opacity-20" />
                 <div className="relative">
                   <h3 className="font-heading text-lg font-semibold text-white mb-3">Quick Contact</h3>
                   <p className="text-sm text-gray-400 mb-5">Prefer to reach out directly? We&apos;re always available.</p>
                   <div className="space-y-3">
-                    <a href={`tel:${CONTACT_INFO.phone}`} className="flex items-center gap-3 text-sm text-gray-300 hover:text-white transition-colors">
-                      <Phone size={16} /> {CONTACT_INFO.phone}
-                    </a>
-                    <a href={`mailto:${CONTACT_INFO.email}`} className="flex items-center gap-3 text-sm text-gray-300 hover:text-white transition-colors">
-                      <Mail size={16} /> {CONTACT_INFO.email}
-                    </a>
+                    <a href={`tel:${contact.phone}`} className="flex items-center gap-3 text-sm text-gray-300 hover:text-white transition-colors"><Phone size={16} /> {contact.phone}</a>
+                    <a href={`mailto:${contact.email}`} className="flex items-center gap-3 text-sm text-gray-300 hover:text-white transition-colors"><Mail size={16} /> {contact.email}</a>
                   </div>
                 </div>
               </div>
@@ -257,6 +196,6 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
-    </main>
+    </>
   );
 }

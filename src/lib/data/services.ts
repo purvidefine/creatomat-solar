@@ -503,3 +503,49 @@ export function getServiceBySlug(slug: string): ServiceData | undefined {
 export function getServicesByCategory(category: string): ServiceData[] {
   return SERVICES_DATA.filter((s) => s.category === category);
 }
+
+// ─── Sanity-backed async functions (fall back to static data) ───────────────
+
+import { client, isSanityConfigured } from "@/sanity/lib/client";
+import {
+  ALL_SERVICES_QUERY,
+  ALL_SERVICE_SLUGS_QUERY,
+  SERVICE_BY_SLUG_QUERY,
+} from "@/sanity/lib/queries";
+
+function normalizeService(raw: Record<string, unknown>): ServiceData {
+  return raw as unknown as ServiceData;
+}
+
+export async function fetchAllServices(): Promise<ServiceData[]> {
+  if (!isSanityConfigured) return SERVICES_DATA;
+  try {
+    const data = await client.fetch<Record<string, unknown>[]>(ALL_SERVICES_QUERY, {}, { next: { tags: ["service"] } });
+    if (!data?.length) return SERVICES_DATA;
+    return data.map(normalizeService);
+  } catch {
+    return SERVICES_DATA;
+  }
+}
+
+export async function fetchAllServiceSlugs(): Promise<string[]> {
+  if (!isSanityConfigured) return getAllServiceSlugs();
+  try {
+    const slugs = await client.fetch<string[]>(ALL_SERVICE_SLUGS_QUERY, {}, { next: { tags: ["service"] } });
+    const merged = [...new Set([...getAllServiceSlugs(), ...(slugs ?? [])])];
+    return merged;
+  } catch {
+    return getAllServiceSlugs();
+  }
+}
+
+export async function fetchServiceBySlug(slug: string): Promise<ServiceData | undefined> {
+  if (!isSanityConfigured) return getServiceBySlug(slug);
+  try {
+    const data = await client.fetch<Record<string, unknown> | null>(SERVICE_BY_SLUG_QUERY, { slug }, { next: { tags: [`service:${slug}`] } });
+    if (!data) return getServiceBySlug(slug);
+    return normalizeService(data);
+  } catch {
+    return getServiceBySlug(slug);
+  }
+}

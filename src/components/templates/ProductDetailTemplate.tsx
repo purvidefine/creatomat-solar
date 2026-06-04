@@ -10,8 +10,14 @@ import type { ProductData } from "@/lib/data/products";
 import { getRelatedProducts } from "@/lib/data/products";
 import Link from "next/link";
 
-export default function ProductDetailTemplate({ data }: { data: ProductData }) {
-  const related = getRelatedProducts(data.relatedProductSlugs);
+export default function ProductDetailTemplate({
+  data,
+  relatedProducts,
+}: {
+  data: ProductData;
+  relatedProducts?: ProductData[];
+}) {
+  const related = relatedProducts ?? getRelatedProducts(data.relatedProductSlugs);
 
   return (
     <main>

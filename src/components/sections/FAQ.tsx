@@ -7,7 +7,11 @@ import { FAQS } from "@/lib/constants";
 import { fadeUp, slideInLeft, staggerContainer } from "@/lib/animations";
 import Button from "@/components/ui/Button";
 
-export default function FAQ() {
+interface FAQItem { question: string; answer: string }
+interface FAQHeader { overline?: string; title?: string; description?: string; ctaText?: string }
+
+export default function FAQ({ faqs, header }: { faqs?: FAQItem[]; header?: FAQHeader }) {
+  const list = faqs?.length ? faqs : FAQS;
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
@@ -23,18 +27,15 @@ export default function FAQ() {
             className="lg:col-span-2"
           >
             <span className="inline-block text-xs font-semibold uppercase tracking-[0.15em] text-primary mb-3">
-              FAQ
+              {header?.overline ?? "FAQ"}
             </span>
             <h2 className="font-heading text-3xl md:text-4xl font-bold text-navy leading-tight tracking-tight mb-4">
-              Got Questions?
-              <br />
-              We&apos;ve Got Answers.
+              {header?.title ?? "Got Questions? We've Got Answers."}
             </h2>
             <p className="text-gray-500 leading-relaxed mb-6">
-              Everything you need to know about going solar with Creatomat. Can&apos;t
-              find what you&apos;re looking for? Reach out to our team.
+              {header?.description ?? "Everything you need to know about going solar with Creatomat. Can't find what you're looking for? Reach out to our team."}
             </p>
-            <Button href="#contact">Contact Us for More</Button>
+            <Button href="#contact">{header?.ctaText ?? "Contact Us for More"}</Button>
           </motion.div>
 
           {/* Right - Accordion */}
@@ -45,7 +46,7 @@ export default function FAQ() {
             viewport={{ once: true, amount: 0.1 }}
             className="lg:col-span-3"
           >
-            {FAQS.map((faq, i) => (
+            {list.map((faq, i) => (
               <motion.div key={i} variants={fadeUp} className="mb-3">
                 <button
                   onClick={() => setOpenIndex(openIndex === i ? null : i)}

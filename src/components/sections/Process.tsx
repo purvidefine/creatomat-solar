@@ -5,42 +5,26 @@ import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { ClipboardCheck, PenTool, HardHat, MonitorSmartphone, ArrowRight } from "lucide-react";
 import Button from "@/components/ui/Button";
 
-const STEPS = [
-  {
-    step: 1,
-    title: "Site Assessment",
-    description: "We survey your location, analyze energy consumption patterns, and evaluate structural feasibility for the optimal solar setup.",
-    icon: ClipboardCheck,
-    color: "from-blue-500 to-cyan-500",
-    detail: "Drone mapping, shadow analysis, load calculation",
-  },
-  {
-    step: 2,
-    title: "Custom Design",
-    description: "Our engineering team designs the optimal system architecture — panel layout, inverter sizing, and electrical integration for maximum ROI.",
-    icon: PenTool,
-    color: "from-violet-500 to-purple-500",
-    detail: "3D modeling, PVsyst simulation, BOQ preparation",
-  },
-  {
-    step: 3,
-    title: "Installation",
-    description: "Professional installation with zero disruption to your operations. Our certified technicians handle everything from structure to commissioning.",
-    icon: HardHat,
-    color: "from-amber to-orange",
-    detail: "Structure mounting, panel laying, wiring & commissioning",
-  },
-  {
-    step: 4,
-    title: "Monitor & Support",
-    description: "24/7 remote monitoring, predictive maintenance alerts, and rapid on-site support to maximize your system's lifetime output.",
-    icon: MonitorSmartphone,
-    color: "from-emerald-500 to-green-500",
-    detail: "IoT monitoring, performance alerts, annual maintenance",
-  },
+interface SanityStep { step: number; title: string; description: string }
+interface ProcessHeader { overline?: string; title?: string; description?: string; ctaText?: string }
+
+const STEP_VISUALS = [
+  { icon: ClipboardCheck, color: "from-blue-500 to-cyan-500", detail: "Drone mapping, shadow analysis, load calculation" },
+  { icon: PenTool, color: "from-violet-500 to-purple-500", detail: "3D modeling, PVsyst simulation, BOQ preparation" },
+  { icon: HardHat, color: "from-amber to-orange", detail: "Structure mounting, panel laying, wiring & commissioning" },
+  { icon: MonitorSmartphone, color: "from-emerald-500 to-green-500", detail: "IoT monitoring, performance alerts, annual maintenance" },
 ];
 
-function ProcessStep({ step, index }: { step: typeof STEPS[0]; index: number }) {
+const DEFAULT_STEPS: SanityStep[] = [
+  { step: 1, title: "Site Assessment", description: "We survey your location, analyze energy consumption patterns, and evaluate structural feasibility for the optimal solar setup." },
+  { step: 2, title: "Custom Design", description: "Our engineering team designs the optimal system architecture — panel layout, inverter sizing, and electrical integration for maximum ROI." },
+  { step: 3, title: "Installation", description: "Professional installation with zero disruption to your operations. Our certified technicians handle everything from structure to commissioning." },
+  { step: 4, title: "Monitor & Support", description: "24/7 remote monitoring, predictive maintenance alerts, and rapid on-site support to maximize your system's lifetime output." },
+];
+
+type MergedStep = SanityStep & typeof STEP_VISUALS[0];
+
+function ProcessStep({ step, index }: { step: MergedStep; index: number }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.4 });
   const Icon = step.icon;
@@ -118,7 +102,9 @@ function ProcessStep({ step, index }: { step: typeof STEPS[0]; index: number }) 
   );
 }
 
-export default function Process() {
+export default function Process({ steps: stepsProp, header }: { steps?: SanityStep[]; header?: ProcessHeader }) {
+  const textSteps = stepsProp?.length ? stepsProp : DEFAULT_STEPS;
+  const STEPS: MergedStep[] = textSteps.map((s, i) => ({ ...s, ...STEP_VISUALS[i % STEP_VISUALS.length] }));
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -143,16 +129,15 @@ export default function Process() {
           className="text-center mb-16 lg:mb-24"
         >
           <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-primary mb-4">
-            How We Work
+            {header?.overline ?? "How We Work"}
           </span>
           <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-navy leading-tight tracking-tight mb-5">
-            From Consultation to
-            <br />
-            <span className="gradient-text">Commission</span>
+            {header?.title ?? (
+              <>From Consultation to<br /><span className="gradient-text">Commission</span></>
+            )}
           </h2>
           <p className="text-gray-500 max-w-xl mx-auto text-base lg:text-lg">
-            A transparent, proven 4-step process that transforms your rooftop into a
-            powerhouse — with zero hassle.
+            {header?.description ?? "A transparent, proven 4-step process that transforms your rooftop into a powerhouse — with zero hassle."}
           </p>
         </motion.div>
 
@@ -190,7 +175,7 @@ export default function Process() {
           className="text-center mt-16 lg:mt-24"
         >
           <Button href="/contact" size="lg">
-            Start Your Solar Journey
+            {header?.ctaText ?? "Start Your Solar Journey"}
             <ArrowRight size={18} className="ml-2" />
           </Button>
         </motion.div>

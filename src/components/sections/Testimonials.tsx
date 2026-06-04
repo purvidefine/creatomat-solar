@@ -7,20 +7,24 @@ import SectionHeader from "@/components/ui/SectionHeader";
 import { TESTIMONIALS } from "@/lib/constants";
 import { fadeUp } from "@/lib/animations";
 
-export default function Testimonials() {
+interface Testimonial { quote: string; name: string; designation: string; company?: string }
+interface SectionHeader { overline?: string; title?: string }
+
+export default function Testimonials({ testimonials, header }: { testimonials?: Testimonial[]; header?: SectionHeader }) {
+  const list = testimonials?.length ? testimonials : TESTIMONIALS;
   const [current, setCurrent] = useState(0);
 
   const prev = () =>
-    setCurrent((c) => (c === 0 ? TESTIMONIALS.length - 1 : c - 1));
+    setCurrent((c) => (c === 0 ? list.length - 1 : c - 1));
   const next = () =>
-    setCurrent((c) => (c === TESTIMONIALS.length - 1 ? 0 : c + 1));
+    setCurrent((c) => (c === list.length - 1 ? 0 : c + 1));
 
   return (
     <section className="section-padding bg-gray-50 grid-lines-light">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          overline="Client Stories"
-          title="What Our Partners Say"
+          overline={header?.overline ?? "Client Stories"}
+          title={header?.title ?? "What Our Partners Say"}
         />
 
         <motion.div
@@ -47,15 +51,15 @@ export default function Testimonials() {
                   className="w-full"
                 >
                   <p className="text-lg md:text-xl text-gray-600 leading-relaxed italic mb-8">
-                    &ldquo;{TESTIMONIALS[current].quote}&rdquo;
+                    &ldquo;{list[current].quote}&rdquo;
                   </p>
                   <div>
                     <p className="font-heading font-semibold text-navy">
-                      {TESTIMONIALS[current].name}
+                      {list[current].name}
                     </p>
                     <p className="text-sm text-gray-400">
-                      {TESTIMONIALS[current].designation},{" "}
-                      {TESTIMONIALS[current].company}
+                      {list[current].designation},{" "}
+                      {list[current].company}
                     </p>
                   </div>
                 </motion.div>
@@ -65,7 +69,7 @@ export default function Testimonials() {
             {/* Navigation */}
             <div className="flex items-center justify-between mt-8">
               <div className="flex gap-2">
-                {TESTIMONIALS.map((_, i) => (
+                {list.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setCurrent(i)}

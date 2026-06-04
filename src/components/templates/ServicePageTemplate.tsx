@@ -14,8 +14,8 @@ import Button from "@/components/ui/Button";
 import Counter from "@/components/ui/Counter";
 import { fadeUp, staggerContainer, slideInLeft, slideInRight } from "@/lib/animations";
 import type { ServiceData } from "@/lib/data/services";
-import { getProjectsByServiceSlug } from "@/lib/data/projects";
-import { getRelatedProducts } from "@/lib/data/products";
+import { getProjectsByServiceSlug, type ProjectData } from "@/lib/data/projects";
+import { getRelatedProducts, type ProductData } from "@/lib/data/products";
 import Link from "next/link";
 import {
   AutomationBlueprint,
@@ -37,9 +37,17 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Ruler, Eye, RefreshCw, Package, Battery, IndianRupee, BarChart,
 };
 
-export default function ServicePageTemplate({ data }: { data: ServiceData }) {
-  const projects = getProjectsByServiceSlug(data.slug);
-  const products = getRelatedProducts(data.relatedProductSlugs);
+export default function ServicePageTemplate({
+  data,
+  relatedProjects: relatedProjectsProp,
+  relatedProducts: relatedProductsProp,
+}: {
+  data: ServiceData;
+  relatedProjects?: ProjectData[];
+  relatedProducts?: ProductData[];
+}) {
+  const projects = relatedProjectsProp ?? getProjectsByServiceSlug(data.slug);
+  const products = relatedProductsProp ?? getRelatedProducts(data.relatedProductSlugs);
   const Blueprint = BLUEPRINT_MAP[data.slug];
 
   return (

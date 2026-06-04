@@ -5,21 +5,24 @@ import { MapPin, Zap, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import SectionHeader from "@/components/ui/SectionHeader";
 import { PROJECTS_DATA } from "@/lib/data/projects";
+import type { ProjectData } from "@/lib/data/projects";
 import { fadeUp, staggerContainer } from "@/lib/animations";
 
-// Show 4 featured projects (mix of categories)
-const FEATURED = PROJECTS_DATA.filter((p) =>
+const DEFAULT_FEATURED = PROJECTS_DATA.filter((p) =>
   ["250kw-rooftop-bhilwara", "textile-automation-bhilwara", "smart-villa-udaipur", "bobbin-winding-spm"].includes(p.slug)
 );
 
-export default function Projects() {
+interface SectionHeader { overline?: string; title?: string; description?: string; viewAllText?: string }
+
+export default function Projects({ projects, header }: { projects?: ProjectData[]; header?: SectionHeader }) {
+  const FEATURED = projects?.length ? projects : DEFAULT_FEATURED;
   return (
     <section id="projects" className="section-padding bg-white grid-lines-light">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          overline="Our Work"
-          title="Projects That Power Progress"
-          description="Solar plants, automated lines, smart homes, and custom machines — real installations delivering real results."
+          overline={header?.overline ?? "Our Work"}
+          title={header?.title ?? "Projects That Power Progress"}
+          description={header?.description ?? "Solar plants, automated lines, smart homes, and custom machines — real installations delivering real results."}
         />
 
         <motion.div
@@ -97,7 +100,7 @@ export default function Projects() {
             href="/projects"
             className="inline-flex items-center text-sm font-semibold text-primary hover:text-primary-light transition-colors"
           >
-            See All Projects <ArrowRight size={14} className="ml-1" />
+            {header?.viewAllText ?? "See All Projects"} <ArrowRight size={14} className="ml-1" />
           </Link>
         </motion.div>
       </div>

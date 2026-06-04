@@ -23,7 +23,11 @@ const iconMap: Record<string, React.ElementType> = {
   Headphones,
 };
 
-export default function WhyChooseUs() {
+interface Feature { title: string; description: string; icon: string }
+interface SectionHeader { overline?: string; title?: string; description?: string; bigStatNumber?: string; bigStatLabel?: string }
+
+export default function WhyChooseUs({ features, header }: { features?: Feature[]; header?: SectionHeader }) {
+  const list = features?.length ? features : WHY_CHOOSE_US;
   return (
     <section className="section-padding bg-navy relative overflow-hidden grid-lines-dark">
       {/* Background glow */}
@@ -31,9 +35,9 @@ export default function WhyChooseUs() {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          overline="Why Creatomat"
-          title="Built Different. Engineered Better."
-          description="We combine deep engineering expertise with modern technology to deliver solutions that set the standard."
+          overline={header?.overline ?? "Why Creatomat"}
+          title={header?.title ?? "Built Different. Engineered Better."}
+          description={header?.description ?? "We combine deep engineering expertise with modern technology to deliver solutions that set the standard."}
           light
         />
 
@@ -44,7 +48,7 @@ export default function WhyChooseUs() {
           viewport={{ once: true, amount: 0.1 }}
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16"
         >
-          {WHY_CHOOSE_US.map((item) => {
+          {list.map((item) => {
             const Icon = iconMap[item.icon] || Award;
             return (
               <motion.div
@@ -73,9 +77,11 @@ export default function WhyChooseUs() {
           className="text-center"
         >
           <div className="font-heading text-5xl md:text-7xl font-bold text-white mb-2">
-            <Counter value={500} suffix="+" />
+            {header?.bigStatNumber
+              ? header.bigStatNumber
+              : <Counter value={500} suffix="+" />}
           </div>
-          <p className="text-gray-400 text-lg">Projects Delivered Across India</p>
+          <p className="text-gray-400 text-lg">{header?.bigStatLabel ?? "Projects Delivered Across India"}</p>
         </motion.div>
       </div>
     </section>

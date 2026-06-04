@@ -9,7 +9,22 @@ import { STATS } from "@/lib/constants";
 import { fadeUp, staggerContainer } from "@/lib/animations";
 import SolarPanel3D from "@/components/ui/SolarPanel3D";
 
-export default function Hero() {
+interface HeroStat { value: number; suffix?: string; label: string }
+interface HeroContent {
+  badgeText?: string;
+  titleLine1?: string;
+  titleHighlight?: string;
+  titleLine3?: string;
+  subtitle?: string;
+  ctaPrimaryText?: string;
+  ctaPrimaryHref?: string;
+  ctaSecondaryText?: string;
+  ctaSecondaryHref?: string;
+}
+
+export default function Hero({ stats, hero }: { stats?: HeroStat[]; hero?: HeroContent | null }) {
+  const resolvedStats = stats?.length ? stats : STATS;
+  const h = hero ?? {};
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -48,7 +63,7 @@ export default function Hero() {
             >
               <Sparkles size={14} className="text-primary" />
               <span className="text-xs font-medium text-gray-600 tracking-wide">
-                Solar · Automation · Smart Homes · SPM
+                {h.badgeText ?? "Solar · Automation · Smart Homes · SPM"}
               </span>
             </motion.div>
 
@@ -56,32 +71,31 @@ export default function Hero() {
               variants={fadeUp}
               className="font-heading text-4xl sm:text-5xl lg:text-6xl xl:text-[68px] font-bold text-navy leading-[1.05] tracking-tight mb-6"
             >
-              Engineering
+              {h.titleLine1 ?? "Engineering"}
               <br />
-              <span className="gradient-text-dark">Smarter</span>
+              <span className="gradient-text-dark">{h.titleHighlight ?? "Smarter"}</span>
               <br />
-              Systems
+              {h.titleLine3 ?? "Systems"}
             </motion.h1>
 
             <motion.p
               variants={fadeUp}
               className="text-base lg:text-lg text-gray-500 leading-relaxed mb-10 max-w-md"
             >
-              Solar EPC, industrial automation, smart homes & custom machines
-              — integrated engineering solutions, delivered with precision.
+              {h.subtitle ?? "Solar EPC, industrial automation, smart homes & custom machines — integrated engineering solutions, delivered with precision."}
             </motion.p>
 
             <motion.div variants={fadeUp} className="flex flex-wrap gap-4 mb-12">
-              <Button href="/contact" size="lg">
-                Get Free Consultation
+              <Button href={h.ctaPrimaryHref ?? "/contact"} size="lg">
+                {h.ctaPrimaryText ?? "Get Free Consultation"}
                 <ArrowRight size={18} className="ml-2" />
               </Button>
               <a
-                href="/projects"
+                href={h.ctaSecondaryHref ?? "/projects"}
                 className="inline-flex items-center justify-center px-8 py-4 text-base font-medium rounded-xl border-2 border-navy/20 text-navy hover:bg-navy/5 hover:-translate-y-0.5 transition-all duration-300"
               >
                 <Play size={16} className="mr-2" />
-                View Projects
+                {h.ctaSecondaryText ?? "View Projects"}
               </a>
             </motion.div>
 
@@ -90,7 +104,7 @@ export default function Hero() {
               variants={fadeUp}
               className="flex items-center gap-8 pt-8 border-t border-navy/10"
             >
-              {STATS.slice(0, 3).map((stat) => (
+              {resolvedStats.slice(0, 3).map((stat) => (
                 <div key={stat.label}>
                   <div className="font-heading text-2xl lg:text-3xl font-bold text-navy">
                     <Counter value={stat.value} suffix={stat.suffix} />

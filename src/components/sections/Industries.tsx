@@ -17,14 +17,18 @@ import { fadeUp, staggerContainer } from "@/lib/animations";
 
 const icons = [Factory, Shirt, Pill, Wheat, Building2, UtensilsCrossed, GraduationCap, Landmark];
 
-export default function Industries() {
+interface Industry { name: string; description: string }
+interface SectionHeader { overline?: string; title?: string; description?: string }
+
+export default function Industries({ industries, header }: { industries?: Industry[]; header?: SectionHeader }) {
+  const list = industries?.length ? industries : INDUSTRIES;
   return (
     <section className="section-padding bg-white grid-lines-light">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          overline="Industries We Serve"
-          title="Powering Every Sector"
-          description="From factories to farms, we deliver tailored energy and automation solutions across diverse industries."
+          overline={header?.overline ?? "Industries We Serve"}
+          title={header?.title ?? "Powering Every Sector"}
+          description={header?.description ?? "From factories to farms, we deliver tailored energy and automation solutions across diverse industries."}
         />
 
         <motion.div
@@ -34,7 +38,7 @@ export default function Industries() {
           viewport={{ once: true, amount: 0.1 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-4"
         >
-          {INDUSTRIES.map((industry, i) => {
+          {list.map((industry, i) => {
             const Icon = icons[i] || Factory;
             return (
               <motion.div

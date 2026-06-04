@@ -26,14 +26,18 @@ const iconMap: Record<string, React.ElementType> = {
   Home,
 };
 
-export default function Services() {
+interface ServiceCard { title: string; description: string; icon: string; href: string }
+interface SectionHeader { overline?: string; title?: string; description?: string }
+
+export default function Services({ services, header }: { services?: ServiceCard[]; header?: SectionHeader }) {
+  const list = services?.length ? services : SERVICES;
   return (
     <section id="services" className="section-padding bg-gray-50 grid-lines-light">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          overline="What We Do"
-          title="Integrated Engineering Solutions"
-          description="From solar energy to factory automation and smart homes — we engineer complete systems that power your business and lifestyle."
+          overline={header?.overline ?? "What We Do"}
+          title={header?.title ?? "Integrated Engineering Solutions"}
+          description={header?.description ?? "From solar energy to factory automation and smart homes — we engineer complete systems that power your business and lifestyle."}
         />
 
         <motion.div
@@ -43,7 +47,7 @@ export default function Services() {
           viewport={{ once: true, amount: 0.1 }}
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {SERVICES.map((service) => {
+          {list.map((service) => {
             const Icon = iconMap[service.icon] || Sun;
             return (
               <motion.div key={service.title} variants={fadeUp}>

@@ -6,12 +6,22 @@ import Image from "next/image";
 import { useRef, type MouseEvent } from "react";
 import { fadeUp, slideInLeft, slideInRight, staggerContainer } from "@/lib/animations";
 
-const CAPABILITIES = [
+const DEFAULT_CAPABILITIES = [
   "Solar EPC & Engineering",
   "Industrial Automation Systems",
   "Special Purpose Machines",
   "Made in India Manufacturing",
 ];
+
+interface AboutContent {
+  eyebrow?: string;
+  title?: string;
+  paragraph1?: string;
+  paragraph2?: string;
+  capabilities?: string[];
+  yearsText?: string;
+  yearsLabel?: string;
+}
 
 function Logo3D() {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -140,7 +150,10 @@ function Logo3D() {
   );
 }
 
-export default function About() {
+export default function About({ about }: { about?: AboutContent | null }) {
+  const a = about ?? {};
+  const capabilities = a.capabilities?.length ? a.capabilities : DEFAULT_CAPABILITIES;
+
   return (
     <section id="about" className="section-padding bg-white grid-lines-light">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -156,29 +169,25 @@ export default function About() {
               variants={fadeUp}
               className="inline-block text-xs font-semibold uppercase tracking-[0.15em] text-primary mb-3"
             >
-              About Creatomat
+              {a.eyebrow ?? "About Creatomat"}
             </motion.span>
             <motion.h2
               variants={fadeUp}
               className="font-heading text-3xl md:text-4xl lg:text-[40px] font-bold text-navy leading-tight tracking-tight mb-6"
             >
-              Engineering Excellence
-              <br />
-              Since Day One
+              {a.title ?? (
+                <>Engineering Excellence<br />Since Day One</>
+              )}
             </motion.h2>
             <motion.p variants={fadeUp} className="text-gray-500 leading-relaxed mb-4">
-              Creatomat Private Limited specializes in developing special purpose
-              machinery, automation systems, and solar energy solutions that drive
-              efficiency, quality, and sustainability for businesses across India.
+              {a.paragraph1 ?? "Creatomat Private Limited specializes in developing special purpose machinery, automation systems, and solar energy solutions that drive efficiency, quality, and sustainability for businesses across India."}
             </motion.p>
             <motion.p variants={fadeUp} className="text-gray-500 leading-relaxed mb-8">
-              Our team of experienced engineers combines deep domain expertise with
-              cutting-edge technology to deliver turnkey solutions that are designed,
-              manufactured, and commissioned entirely in-house.
+              {a.paragraph2 ?? "Our team of experienced engineers combines deep domain expertise with cutting-edge technology to deliver turnkey solutions that are designed, manufactured, and commissioned entirely in-house."}
             </motion.p>
 
             <motion.div variants={fadeUp} className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-              {CAPABILITIES.map((cap) => (
+              {capabilities.map((cap) => (
                 <div key={cap} className="flex items-center gap-2">
                   <CheckCircle size={18} className="text-primary flex-shrink-0" />
                   <span className="text-sm font-medium text-gray-600">{cap}</span>
@@ -210,8 +219,8 @@ export default function About() {
               variants={slideInLeft}
               className="absolute -bottom-6 -left-6 glass-light rounded-xl px-6 py-4 shadow-xl"
             >
-              <div className="font-heading text-2xl font-bold text-navy">15+</div>
-              <div className="text-xs text-gray-500">Years of Innovation</div>
+              <div className="font-heading text-2xl font-bold text-navy">{a.yearsText ?? "15+"}</div>
+              <div className="text-xs text-gray-500">{a.yearsLabel ?? "Years of Innovation"}</div>
             </motion.div>
           </motion.div>
         </div>
