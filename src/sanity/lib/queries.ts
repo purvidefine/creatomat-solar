@@ -160,6 +160,7 @@ export const ALL_PROJECTS_QUERY = `*[_type == "project"] | order(_createdAt asc)
   results,
   ${specsProjection},
   testimonial,
+  "relatedProjectSlugs": relatedProjects[]->slug.current,
   gallery,
   featured
 }`;
@@ -179,6 +180,7 @@ export const PROJECT_BY_SLUG_QUERY = `*[_type == "project" && slug.current == $s
   results,
   ${specsProjection},
   testimonial,
+  "relatedProjectSlugs": relatedProjects[]->slug.current,
   gallery,
   featured
 }`;

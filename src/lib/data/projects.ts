@@ -24,6 +24,7 @@ export interface ProjectData {
   results: ProjectMetric[];
   specifications: Record<string, string>;
   testimonial?: ProjectTestimonial;
+  relatedProjectSlugs?: string[];
   gallery: string[];
 }
 
@@ -603,8 +604,12 @@ export async function fetchProjectsByServiceSlug(serviceSlug: string): Promise<P
   return all.filter((p) => p.serviceSlug === serviceSlug);
 }
 
-export async function fetchRelatedProjects(currentSlug: string, serviceSlug: string, limit = 3): Promise<ProjectData[]> {
+export async function fetchRelatedProjects(currentSlug: string, serviceSlug: string, limit = 3, relatedSlugs?: string[]): Promise<ProjectData[]> {
   const all = await fetchAllProjects();
+  // Use Studio-configured related projects when available
+  if (relatedSlugs?.length) {
+    return all.filter((p) => relatedSlugs.includes(p.slug) && p.slug !== currentSlug).slice(0, limit);
+  }
   return all.filter((p) => p.serviceSlug === serviceSlug && p.slug !== currentSlug).slice(0, limit);
 }
 

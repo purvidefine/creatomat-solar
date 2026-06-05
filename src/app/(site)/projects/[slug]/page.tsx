@@ -29,6 +29,6 @@ export default async function ProjectPage({
   const { slug } = await params;
   const project = await fetchProjectBySlug(slug);
   if (!project) notFound();
-  const related = await fetchRelatedProjects(slug, project.serviceSlug, 3);
+  const related = await fetchRelatedProjects(slug, project.serviceSlug, 3, project.relatedProjectSlugs);
   return <ProjectDetailTemplate data={project} relatedProjects={related} />;
 }

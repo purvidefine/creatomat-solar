@@ -44,6 +44,13 @@ export default defineType({
       ],
     }),
     defineField({
+      name: "relatedProjects",
+      title: "Related Projects",
+      type: "array",
+      of: [{ type: "reference", to: [{ type: "project" }] }],
+      description: "Select other projects to show in the 'You might also like' section.",
+    }),
+    defineField({
       name: "gallery",
       title: "Gallery",
       type: "array",
